@@ -538,17 +538,18 @@ Clabel ProcessNode (TreeNode T, Clabel CurrLabel)
 
        case RepeatNode :
          if (CurrLabel == NoLabel) 
-            Label1 = MakeLabel();
-         else 
-            Label1 = CurrLabel;
-         Label2 = MakeLabel();
-         Label3 = MakeLabel();
+            CurrLabel = MakeLabel();
+        
+         Label2 = CurrLabel;
+         Label1 = MakeLabel();
 
-         Expression (Child(T,2), Label1);
-         CodeGen2 (CONDOP, Label2, Label3, NoLabel);
+	 for(int i=1;i<NKids(T);++i){
+	 	CurrLabel = ProcessNode (Child(T,i),CurrLabel);
+	 }
+         Expression (Child(T,NKids(T)), CurrLabel);
+         CodeGen2 (CONDOP, Label1, Label2, NoLabel);
          DecrementFrameSize();
-         CodeGen1 (GOTOOP, Label1, ProcessNode (Child(T,1), Label2) );
-         return (Label3);
+         return (Label1);
 
        case NullNode : return(CurrLabel);
 
