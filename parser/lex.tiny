@@ -38,10 +38,6 @@ STR     \"[^\"]+\"
 "else" 		{ return rule(ELSE); }
 "while" 	{ return rule(WHILE); }
 "repeat" 	{ return rule(REPEAT); }
-%"loop"  	{ return rule(LOOP); }
-%"upto"  	{ return rule(UPTO); }
-%"downto"  	{ return rule(DOWNTO); }
-%"case"  	{ return rule(CASE); }
 "do" 		{ return rule(DO); }
 "not"           { return rule(NOT); }
 "and"           { return rule(AND); }

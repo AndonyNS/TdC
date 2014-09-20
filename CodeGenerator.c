@@ -543,18 +543,19 @@ Clabel ProcessNode (TreeNode T, Clabel CurrLabel)
          Label2 = CurrLabel;
          Label1 = MakeLabel();
 
-	 for(int i=1;i<NKids(T);++i){
-	 	CurrLabel = ProcessNode (Child(T,i),CurrLabel);
+	 for(Kid=1;Kid < NKids(T); Kid++)
+         {
+	 	CurrLabel = ProcessNode (Child(T,Kid),CurrLabel);
 	 }
          Expression (Child(T,NKids(T)), CurrLabel);
          CodeGen2 (CONDOP, Label1, Label2, NoLabel);
          DecrementFrameSize();
          return (Label1);
 
+
        case NullNode : return(CurrLabel);
 
- 
-      default :
+       default :
               ReportTreeErrorAt(T);
               printf ("<<< CODE GENERATOR >>> : UNKNOWN NODE NAME ");
               Write_String (stdout,NodeName(T));
