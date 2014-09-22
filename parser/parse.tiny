@@ -1,0 +1,57 @@
+%%
+Tiny       -> PROGRAM Name ':' Dclns Body Name '.' 	 => "program";
+Dclns      -> VAR (Dcln ';')*				 => "dclns"
+           -> 					         => "dclns";
+Dcln       -> Name list ',' ':' Type			 => "dcln";
+    
+Type       -> INTEGER 		             		 => "integer"
+           -> BOOLEAN				     	 => "boolean";
+Body       -> BEGINX Statement list ';' END      	 => "block";
+Statement  -> Name ASSIGNMENT Expression          	 => "assign"
+           -> Name SWP Name                              => ":=:"
+           -> OUTPUT '(' Expression list ',' ')'         => "output"
+           -> IF Expression THEN Statement
+                            (ELSE Statement )?       	 => "if"
+           -> WHILE Expression DO Statement      	 => "while"
+           -> REPEAT Body UNTIL Expression               => "repeat"
+           -> LOOP Statement list ';' POOL               => "loop"
+           -> EXIT                                       => "exit"
+           -> Body
+	   ->                                        	 => "<null>";
+
+Expression -> Term	                         		
+	   -> Term LTE Term				 => "<="
+           -> Term GTE Term                              => ">="
+           -> Term NTE Term                              => "<>"
+           -> Term BLT Term                              => "<"
+           -> Term BGT Term                              => ">"
+           -> Term EQU Term                              => "=";
+
+Term       -> Factor 
+           -> Term OR Factor                             => "or"
+	   -> Term '+' Factor				 => "+"
+	   -> Term '-' Factor                            => "-";
+
+Factor     -> UnaryOp 
+           -> Factor MOD UnaryOp                         => "mod"
+           -> Factor AND UnaryOp                         => "and"
+	   -> Factor '/' UnaryOp                         => "/"
+	   -> Factor '*' UnaryOp                         => "*";
+
+UnaryOp    -> '-' UnaryOp                            	 => "-"
+           -> NOT UnaryOp                            	 => "not"
+           -> '+' UnaryOp                                => "+"
+           -> Exponent;                            	
+
+Exponent   -> Primary
+           -> Primary EXP Exponent                       => "**";
+
+Primary    -> TRUE                                       => "true"
+           -> FALSE                                      => "false"
+           -> EOFI                                       => "eof"
+           -> READ                                 	 => "read"
+           -> Name
+           -> INTEGER_NUM				 => "<integer>"
+           -> '(' Expression ')';
+
+Name       -> IDENTIFIER				 => "<identifier>";
