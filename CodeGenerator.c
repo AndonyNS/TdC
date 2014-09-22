@@ -568,6 +568,7 @@ Clabel ProcessNode (TreeNode T, Clabel CurrLabel)
          return (Label1);
 
        case ExitNode :
+
          Label1= Decoration(Decoration(T));
          CodeGen1(GOTOOP, Label1, CurrLabel);
          return (NoLabel);
