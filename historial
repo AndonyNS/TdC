@@ -1,0 +1,6 @@
+  796  make clean
+  816  which pgen
+  839  more _CODE
+  842  ./tc tests/test-progs/pr2.c03
+  843  ../bin/print_tree 
+  844  ./tc_parse_cons  tests/test-progs/pr2.c03
