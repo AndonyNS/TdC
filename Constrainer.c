@@ -52,8 +52,9 @@
 #define EofNode         36
 #define IntegerNode     37
 #define IdentifierNode  38
+#define LOOP_CTXT  39
 
-#define NumberOfNodes  38
+#define NumberOfNodes  39
 
 typedef TreeNode UserType;
 
@@ -67,7 +68,7 @@ char *node[] = { "program", "types", "type", "dclns",
                  "assign", "output", "if", "while", "repeat", "loop", "exit",
                  "<null>", "<=", "=",">=","<>", 
                  "<", ">", "and","or","+", "-", "mod","*", "/", "**",":=:",
-                 "not","read", "true","false", "eof","<integer>", "<identifier>" 
+                 "not","read", "true","false", "eof","<integer>", "<identifier>" , "<loop_ctxt>"
                 };
 
 
@@ -413,6 +414,7 @@ void ProcessNode (TreeNode T)
    int Kid, N;
    String Name1, Name2;
    TreeNode Type1, Type2, Type3;
+   int Temp;
 
    if (TraceSpecified)
    {
@@ -549,21 +551,22 @@ void ProcessNode (TreeNode T)
          OpenScope();
          DTEnter(LOOP_CTXT,T,T);
 
-         for (Kid = 2; Kid <= NKids(T)-1; Kid++)
+         for (Kid = 1; Kid <= NKids(T); Kid++)
             ProcessNode (Child(T,Kid));
          CloseScope();
-         if(Decoration(T)==0)
+         if(Decoration(T)==0){
             ErrorHeader(T);
             printf ("WARNING: No 'exit'\n");
             printf ("\n");
+}
          break;
 
       case ExitNode :
          Temp = Lookup(LOOP_CTXT,T);
-         if NodeName(Temp) != LoopNode
+         if (NodeName(Temp) != LoopNode){
             ErrorHeader(T);
             printf ("'exit' on a wrong context\n");
-            printf ("\n");
+            printf ("\n");}
          Decorate(T,Temp); 
          Decorate(Temp,T);
          break;

@@ -554,23 +554,23 @@ Clabel ProcessNode (TreeNode T, Clabel CurrLabel)
          return (Label1);
 
        case LoopNode :
-         Label1 = Decorate ( Child(T,Kid), MakeLabel());
+         Decorate ( T, Label1 = MakeLabel());
          if (CurrLabel == NoLabel) 
             CurrLabel = MakeLabel();
          Label2 = CurrLabel;
 
-	 for(Kid=1;Kid < NKids(T); Kid++)
+	 for(Kid=1;Kid <= NKids(T); Kid++)
          {
 	 	CurrLabel = ProcessNode (Child(T,Kid),CurrLabel);
 	 }
          CodeGen1 (GOTOOP, Label2, CurrLabel);
          DecrementFrameSize();
-         return (Label2);
+         return (Label1);
 
        case ExitNode :
          Label1= Decoration(Decoration(T));
-         CodeGen1(GOTOOP, L1, Currlabel);
-         return (Label1);
+         CodeGen1(GOTOOP, Label1, CurrLabel);
+         return (NoLabel);
 
        case NullNode : return(CurrLabel);
 
