@@ -85,31 +85,33 @@
 #define    IfNode          58   /* 'if'       */
 #define    WhileNode       59   /* 'while'    */
 #define    RepeatNode      60   /* 'repeat'   */
-#define    NullNode        61   /* '<null>'   */
-#define    LENode          62   /* '<='       */
-#define    EQNode          63   /* '='        */
-#define    GENode          64   /* '>='       */
-#define    NENode          65   /* '<>'       */
-#define    LTNode          66   /* '<'        */
-#define    GTNode          67   /* '>'        */
-#define    AndNode         68   /* 'and'      */
-#define    OrNode          69   /* 'or'       */
-#define    PlusNode        70   /* '+'        */
-#define    MinusNode       71   /* '-'        */
-#define    ModNode         72   /* 'mod'      */
-#define    MultNode        73   /* '*'        */
-#define    DivNode         74   /* '/'        */
-#define    ExpNode         75   /* '**'       */
-#define    SwapNode        76   /* ':=:'      */
-#define    NotNode         77   /* 'not'      */
-#define    ReadNode        78   /* 'read'     */
-#define    TrueNode        79   /* 'true'     */
-#define    FalseNode       80   /* 'false'    */
-#define    EofNode         81   /* 'eof'      */
-#define    IntegerNode     82   /* '<integer>'*/
-#define    IdentifierNode  83   /* '<identifier>'*/
+#define    LoopNode        61   /* 'loop'     */
+#define    ExitNode        62   /* 'exit'     */
+#define    NullNode        63   /* '<null>'   */
+#define    LENode          64   /* '<='       */
+#define    EQNode          65   /* '='        */
+#define    GENode          66   /* '>='       */
+#define    NENode          67   /* '<>'       */
+#define    LTNode          68   /* '<'        */
+#define    GTNode          69   /* '>'        */
+#define    AndNode         70   /* 'and'      */
+#define    OrNode          71   /* 'or'       */
+#define    PlusNode        72   /* '+'        */
+#define    MinusNode       73   /* '-'        */
+#define    ModNode         74   /* 'mod'      */
+#define    MultNode        75   /* '*'        */
+#define    DivNode         76   /* '/'        */
+#define    ExpNode         77   /* '**'       */
+#define    SwapNode        78   /* ':=:'      */
+#define    NotNode         79   /* 'not'      */
+#define    ReadNode        80   /* 'read'     */
+#define    TrueNode        81   /* 'true'     */
+#define    FalseNode       82   /* 'false'    */
+#define    EofNode         83   /* 'eof'      */
+#define    IntegerNode     84   /* '<integer>'*/
+#define    IdentifierNode  85   /* '<identifier>'*/
 
-#define    NumberOfNodes   83 /* '<identifier>'*/
+#define    NumberOfNodes   85 /* '<identifier>'*/
 typedef int Mode;
 
 FILE *CodeFile;
@@ -132,7 +134,7 @@ char *mach_op[] =
 char *node_name[] =
     {"program","types","type","dclns","dcln","integer",
      "boolean","block","assign","output","if","while",
-     "repeat","<null>","<=","=",">=","<>","<",">", "and", "or",
+     "repeat","loop","exit","<null>","<=","=",">=","<>","<",">", "and", "or",
      "+","-","mod","*","/","**",":=:","not",
      "read","true","false","eof","<integer>","<identifier>"};
 
@@ -479,7 +481,6 @@ Clabel ProcessNode (TreeNode T, Clabel CurrLabel)
             CurrLabel = ProcessNode (Child(T,Kid), CurrLabel);
          return (CurrLabel); 
 
-
       case AssignNode :
          Expression (Child(T,2), CurrLabel);
          Reference (Child(T,1), LeftMode, NoLabel);
@@ -552,6 +553,24 @@ Clabel ProcessNode (TreeNode T, Clabel CurrLabel)
          DecrementFrameSize();
          return (Label1);
 
+       case LoopNode :
+         Label1 = Decorate ( Child(T,Kid), MakeLabel());
+         if (CurrLabel == NoLabel) 
+            CurrLabel = MakeLabel();
+         Label2 = CurrLabel;
+
+	 for(Kid=1;Kid < NKids(T); Kid++)
+         {
+	 	CurrLabel = ProcessNode (Child(T,Kid),CurrLabel);
+	 }
+         CodeGen1 (GOTOOP, Label2, CurrLabel);
+         DecrementFrameSize();
+         return (Label2);
+
+       case ExitNode :
+         Label1= Decoration(Decoration(T));
+         CodeGen1(GOTOOP, L1, Currlabel);
+         return (Label1);
 
        case NullNode : return(CurrLabel);
 

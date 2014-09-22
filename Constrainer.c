@@ -27,31 +27,33 @@
 #define IfNode          11
 #define WhileNode       12
 #define RepeatNode      13
-#define NullNode        14
-#define LENode          15
-#define EQNode          16
-#define GENode          17
-#define NENode          18
-#define LTNode          19
-#define GTNode          20
-#define AndNode         21
-#define OrNode          22
-#define PlusNode        23
-#define MinusNode       24
-#define ModNode         25
-#define MultNode        26
-#define DivNode         27
-#define ExpNode         28
-#define SwapNode        29
-#define NotNode         30
-#define ReadNode        31
-#define TrueNode        32
-#define FalseNode       33
-#define EofNode         34
-#define IntegerNode     35
-#define IdentifierNode  36
+#define LoopNode        14
+#define ExitNode        15
+#define NullNode        16
+#define LENode          17
+#define EQNode          18
+#define GENode          19
+#define NENode          20
+#define LTNode          21
+#define GTNode          22
+#define AndNode         23
+#define OrNode          24
+#define PlusNode        25
+#define MinusNode       26
+#define ModNode         27
+#define MultNode        28
+#define DivNode         29
+#define ExpNode         30
+#define SwapNode        31
+#define NotNode         32
+#define ReadNode        33
+#define TrueNode        34
+#define FalseNode       35
+#define EofNode         36
+#define IntegerNode     37
+#define IdentifierNode  38
 
-#define NumberOfNodes  36
+#define NumberOfNodes  38
 
 typedef TreeNode UserType;
 
@@ -62,7 +64,7 @@ typedef TreeNode UserType;
 *****************************************************************/
 char *node[] = { "program", "types", "type", "dclns",
                  "dcln", "integer", "boolean", "block",
-                 "assign", "output", "if", "while", "repeat",
+                 "assign", "output", "if", "while", "repeat", "loop", "exit",
                  "<null>", "<=", "=",">=","<>", 
                  "<", ">", "and","or","+", "-", "mod","*", "/", "**",":=:",
                  "not","read", "true","false", "eof","<integer>", "<identifier>" 
@@ -424,6 +426,7 @@ void ProcessNode (TreeNode T)
    {
       case ProgramNode : 
          OpenScope();
+         DTEnter(LOOP_CTXT,T,T);
          Name1 = NodeName(Child(Child(T,1),1));
          Name2 = NodeName(Child(Child(T,NKids(T)),1));
 
@@ -540,6 +543,29 @@ void ProcessNode (TreeNode T)
          for (Kid = 1; Kid < NKids(T); Kid++){
             ProcessNode (Child(T,Kid));
          }
+         break;
+
+      case LoopNode :
+         OpenScope();
+         DTEnter(LOOP_CTXT,T,T);
+
+         for (Kid = 2; Kid <= NKids(T)-1; Kid++)
+            ProcessNode (Child(T,Kid));
+         CloseScope();
+         if(Decoration(T)==0)
+            ErrorHeader(T);
+            printf ("WARNING: No 'exit'\n");
+            printf ("\n");
+         break;
+
+      case ExitNode :
+         Temp = Lookup(LOOP_CTXT,T);
+         if NodeName(Temp) != LoopNode
+            ErrorHeader(T);
+            printf ("'exit' on a wrong context\n");
+            printf ("\n");
+         Decorate(T,Temp); 
+         Decorate(Temp,T);
          break;
 
       case NullNode : 
