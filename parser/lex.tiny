@@ -43,6 +43,9 @@ STR     \"[^\"]+\"
 "loop"   	{ return rule(LOOP); }
 "pool"          { return rule(POOL); }
 "exit"          { return rule(EXIT); }
+"for"           { return rule(FOR); }
+"to"            { return rule(UPTO); }
+"downto"        { return rule(DOWNTO); }
 "not"           { return rule(NOT); }
 "and"           { return rule(AND); }
 "or"            { return rule(OR); }

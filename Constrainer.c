@@ -29,32 +29,36 @@
 #define RepeatNode      13
 #define LoopNode        14
 #define ExitNode        15
-#define NullNode        16
-#define LENode          17
-#define EQNode          18
-#define GENode          19
-#define NENode          20
-#define LTNode          21
-#define GTNode          22
-#define AndNode         23
-#define OrNode          24
-#define PlusNode        25
-#define MinusNode       26
-#define ModNode         27
-#define MultNode        28
-#define DivNode         29
-#define ExpNode         30
-#define SwapNode        31
-#define NotNode         32
-#define ReadNode        33
-#define TrueNode        34
-#define FalseNode       35
-#define EofNode         36
-#define IntegerNode     37
-#define IdentifierNode  38
-#define LOOP_CTXT  39
+#define ForNode         16
+#define UptoNode        17
+#define DowntoNode      18
+#define NullNode        19
+#define LENode          20
+#define EQNode          21
+#define GENode          22
+#define NENode          23
+#define LTNode          24
+#define GTNode          25
+#define AndNode         26
+#define OrNode          27
+#define PlusNode        28
+#define MinusNode       29
+#define ModNode         30
+#define MultNode        31
+#define DivNode         32
+#define ExpNode         33
+#define SwapNode        34
+#define NotNode         35
+#define ReadNode        36
+#define TrueNode        37
+#define FalseNode       38
+#define EofNode         39
+#define IntegerNode     40
+#define IdentifierNode  41
+#define LOOP_CTXT       42
+#define FOR_CTXT        43
 
-#define NumberOfNodes  39
+#define NumberOfNodes   43
 
 typedef TreeNode UserType;
 
@@ -66,7 +70,7 @@ typedef TreeNode UserType;
 char *node[] = { "program", "types", "type", "dclns",
                  "dcln", "integer", "boolean", "block",
                  "assign", "output", "if", "while", "repeat", "loop", "exit",
-                 "<null>", "<=", "=",">=","<>", 
+                 "for", "to", "downto", "<null>", "<=", "=",">=","<>", 
                  "<", ">", "and","or","+", "-", "mod","*", "/", "**",":=:",
                  "not","read", "true","false", "eof","<integer>", "<identifier>" , "<loop_ctxt>"
                 };
@@ -429,6 +433,7 @@ void ProcessNode (TreeNode T)
       case ProgramNode : 
          OpenScope();
          DTEnter(LOOP_CTXT,T,T);
+         DTEnter(FOR_CTXT,T,T);
          Name1 = NodeName(Child(Child(T,1),1));
          Name2 = NodeName(Child(Child(T,NKids(T)),1));
 
@@ -496,6 +501,15 @@ void ProcessNode (TreeNode T)
             printf ("ASSIGNMENT/SWAP TYPES DO NOT MATCH\n");
             printf ("\n");
          }
+	 Temp = Lookup(FOR_CTXT);
+	 while (NodeName(Temp) != ProgramNode){
+	    if (NodeName(FK(FK(Temp)) = NodeName(FK(FK(T)){
+		ErrorHeader(T);
+                printf ("Cannot assign inside a 'for'\n");
+                printf ("\n");
+	    }
+	    Temp = Decoration(Temp);
+	 }
          break;
 
 
@@ -558,7 +572,7 @@ void ProcessNode (TreeNode T)
             ErrorHeader(T);
             printf ("WARNING: No 'exit'\n");
             printf ("\n");
-}
+         }
          break;
 
       case ExitNode :
@@ -569,6 +583,27 @@ void ProcessNode (TreeNode T)
             printf ("\n");}
          Decorate(T,Temp); 
          Decorate(Temp,T);
+         break;
+
+      case UptoNode :
+      case DowntoNode :
+         Temp = Lookup(FOR_CTXT,T);
+	 Decorate (T,Temp);
+	 OpenScope();
+	 DTEnter(FOR_CTXT,T,T);
+	 DTEnter(LOOP_CTXT);   //  disallows “exit” not sure
+	 for (Kid = 1; Kid <= NKids(T); Kid++){
+            ProcessNode (Child(T,Kid));
+         }
+	 while (NodeName(Temp) != ProgramNode){
+            if (NodeName(FK(FK(Temp)) = NodeName(FK(FK(T)){ //QUE ES!!!
+               ErrorHeader(T);
+               printf ("cannot modify variable from inside the 'for'\n");
+               printf ("\n");
+            }
+            Temp = Decoration(Temp);
+         }
+	 CloseScope();
          break;
 
       case NullNode : 
