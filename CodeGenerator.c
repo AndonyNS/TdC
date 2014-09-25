@@ -87,31 +87,34 @@
 #define    RepeatNode      60   /* 'repeat'   */
 #define    LoopNode        61   /* 'loop'     */
 #define    ExitNode        62   /* 'exit'     */
-#define    NullNode        63   /* '<null>'   */
-#define    LENode          64   /* '<='       */
-#define    EQNode          65   /* '='        */
-#define    GENode          66   /* '>='       */
-#define    NENode          67   /* '<>'       */
-#define    LTNode          68   /* '<'        */
-#define    GTNode          69   /* '>'        */
-#define    AndNode         70   /* 'and'      */
-#define    OrNode          71   /* 'or'       */
-#define    PlusNode        72   /* '+'        */
-#define    MinusNode       73   /* '-'        */
-#define    ModNode         74   /* 'mod'      */
-#define    MultNode        75   /* '*'        */
-#define    DivNode         76   /* '/'        */
-#define    ExpNode         77   /* '**'       */
-#define    SwapNode        78   /* ':=:'      */
-#define    NotNode         79   /* 'not'      */
-#define    ReadNode        80   /* 'read'     */
-#define    TrueNode        81   /* 'true'     */
-#define    FalseNode       82   /* 'false'    */
-#define    EofNode         83   /* 'eof'      */
-#define    IntegerNode     84   /* '<integer>'*/
-#define    IdentifierNode  85   /* '<identifier>'*/
+#define    ForNode         63   /* 'for'      */
+#define    UptoNode        64   /* 'upto'     */
+#define    DowntoNode      65   /* 'downto'   */
+#define    NullNode        66   /* '<null>'   */
+#define    LENode          67   /* '<='       */
+#define    EQNode          68   /* '='        */
+#define    GENode          69   /* '>='       */
+#define    NENode          70   /* '<>'       */
+#define    LTNode          71   /* '<'        */
+#define    GTNode          72   /* '>'        */
+#define    AndNode         73   /* 'and'      */
+#define    OrNode          74   /* 'or'       */
+#define    PlusNode        75   /* '+'        */
+#define    MinusNode       76   /* '-'        */
+#define    ModNode         77   /* 'mod'      */
+#define    MultNode        78   /* '*'        */
+#define    DivNode         79   /* '/'        */
+#define    ExpNode         80   /* '**'       */
+#define    SwapNode        81   /* ':=:'      */
+#define    NotNode         82   /* 'not'      */
+#define    ReadNode        83   /* 'read'     */
+#define    TrueNode        84   /* 'true'     */
+#define    FalseNode       85   /* 'false'    */
+#define    EofNode         86   /* 'eof'      */
+#define    IntegerNode     87   /* '<integer>'*/
+#define    IdentifierNode  88   /* '<identifier>'*/
 
-#define    NumberOfNodes   85 /* '<identifier>'*/
+#define    NumberOfNodes   89 /* '<identifier>'*/
 typedef int Mode;
 
 FILE *CodeFile;
@@ -134,7 +137,8 @@ char *mach_op[] =
 char *node_name[] =
     {"program","types","type","dclns","dcln","integer",
      "boolean","block","assign","output","if","while",
-     "repeat","loop","exit","<null>","<=","=",">=","<>","<",">", "and", "or",
+     "repeat","loop","exit","for","upto","downto",
+     "<null>","<=","=",">=","<>","<",">", "and", "or",
      "+","-","mod","*","/","**",":=:","not",
      "read","true","false","eof","<integer>","<identifier>"};
 
@@ -568,9 +572,28 @@ Clabel ProcessNode (TreeNode T, Clabel CurrLabel)
          return (Label1);
 
        case ExitNode :
-
          Label1= Decoration(Decoration(T));
          CodeGen1(GOTOOP, Label1, CurrLabel);
+         return (NoLabel);
+
+       case UptoNode :
+         CurrLabel = MakeLabel();         
+	 ProcessNode(Child(T,3),NoLabel);
+	 ProcessNode(Child(T,2),NoLabel);
+	 Reference (Child(T,1), RightMode, NoLabel);
+	 CodeGen1(DUPOP, Label1, CurrLabel);
+	 Reference (Child(T,1), LeftMode, NoLabel);
+	 CodeGen1 (BOPOP, BGE, NoLabel);
+	 CodeGen2 (CONDOP, Label2, Label3, NoLabel);
+	 Label2 = ProcessNode(Child(T,4),NoLabel);
+	 Reference (Child(T,1), LeftMode, NoLabel);
+	 CodeGen1 (NOP, USUCC, NoLabel);
+	 Reference (Child(T,1), RightMode, NoLabel);
+	 CodeGen1(GOTOOP, Label1, CurrLabel);
+	 Label3 = (POPOP, MakeStringOf(1), Label3);
+         CodeGen1 (LITOP, MakeStringOf(0), CurrLabel);
+	 Reference (Child(T,1), RightMode, NoLabel);
+         DecrementFrameSize();
          return (NoLabel);
 
        case NullNode : return(CurrLabel);

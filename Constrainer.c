@@ -501,9 +501,9 @@ void ProcessNode (TreeNode T)
             printf ("ASSIGNMENT/SWAP TYPES DO NOT MATCH\n");
             printf ("\n");
          }
-	 Temp = Lookup(FOR_CTXT);
+	 Temp = Lookup(FOR_CTXT,T);
 	 while (NodeName(Temp) != ProgramNode){
-	    if (NodeName(FK(FK(Temp)) = NodeName(FK(FK(T)){
+	    if (NodeName(Child(Child(T,1),1)) == NodeName(Child(Child(T,1),1))){
 		ErrorHeader(T);
                 printf ("Cannot assign inside a 'for'\n");
                 printf ("\n");
@@ -587,16 +587,16 @@ void ProcessNode (TreeNode T)
 
       case UptoNode :
       case DowntoNode :
-         Temp = Lookup(FOR_CTXT,T);
+          Temp = Lookup(FOR_CTXT,T);
 	 Decorate (T,Temp);
 	 OpenScope();
 	 DTEnter(FOR_CTXT,T,T);
-	 DTEnter(LOOP_CTXT);   //  disallows “exit” not sure
+	 DTEnter(LOOP_CTXT);
 	 for (Kid = 1; Kid <= NKids(T); Kid++){
             ProcessNode (Child(T,Kid));
          }
 	 while (NodeName(Temp) != ProgramNode){
-            if (NodeName(FK(FK(Temp)) = NodeName(FK(FK(T)){ //QUE ES!!!
+            if (NodeName(Child(Child(T,1),1)) == NodeName(Child(Child(T,1),1))){
                ErrorHeader(T);
                printf ("cannot modify variable from inside the 'for'\n");
                printf ("\n");
