@@ -69,10 +69,12 @@ typedef TreeNode UserType;
 *****************************************************************/
 char *node[] = { "program", "types", "type", "dclns",
                  "dcln", "integer", "boolean", "block",
-                 "assign", "output", "if", "while", "repeat", "loop", "exit",
+                 "assign", "output", "if", "while", 
+	        "repeat", "loop", "exit",
                  "for", "to", "downto", "<null>", "<=", "=",">=","<>", 
                  "<", ">", "and","or","+", "-", "mod","*", "/", "**",":=:",
-                 "not","read", "true","false", "eof","<integer>", "<identifier>" , "<loop_ctxt>"
+                 "not","read", "true","false", "eof","<integer>", 
+	        "<identifier>" , "<loop_ctxt>", "<for_ctxt>"
                 };
 
 
@@ -584,6 +586,9 @@ void ProcessNode (TreeNode T)
          Decorate(T,Temp); 
          Decorate(Temp,T);
          break;
+
+      case ForNode :
+	break;
 
       case UptoNode :
       case DowntoNode :

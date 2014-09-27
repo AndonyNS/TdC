@@ -114,7 +114,7 @@
 #define    IntegerNode     87   /* '<integer>'*/
 #define    IdentifierNode  88   /* '<identifier>'*/
 
-#define    NumberOfNodes   89 /* '<identifier>'*/
+#define    NumberOfNodes   88 /* '<identifier>'*/
 typedef int Mode;
 
 FILE *CodeFile;
@@ -575,6 +575,11 @@ Clabel ProcessNode (TreeNode T, Clabel CurrLabel)
          Label1= Decoration(Decoration(T));
          CodeGen1(GOTOOP, Label1, CurrLabel);
          return (NoLabel);
+
+       case ForNode :
+	return (NoLabel);
+
+
 
        case UptoNode :
          CurrLabel = MakeLabel();         
