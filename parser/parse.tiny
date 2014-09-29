@@ -15,8 +15,13 @@ Statement  -> Name ASSIGNMENT Expression          	  => "assign"
            -> WHILE Expression DO Statement      	  => "while"
            -> REPEAT Body UNTIL Expression                => "repeat"
            -> LOOP Statement list ';' POOL                => "loop"
-           -> FOR Statement (UPTO|DOWNTO) 
-			    Expression DO Statement       => "for"
+           -> FOR Name ASSIGNMENT Expression 
+                  UPTO Expression DO Statement            => "upto"
+           -> FOR Name ASSIGNMENT Expression 
+                  DOWNTO Expression DO Statement          => "downto"
+	   -> CASE Expression OF (CASE_CLAUSE 
+		            ':' Statement ';')+ 
+                            (OTHERWISE Statement)? END    => "case"
            -> EXIT                                        => "exit"
            -> Body
 	   ->                                        	  => "<null>";

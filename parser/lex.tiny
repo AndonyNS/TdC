@@ -46,6 +46,9 @@ STR     \"[^\"]+\"
 "for"           { return rule(FOR); }
 "to"            { return rule(UPTO); }
 "downto"        { return rule(DOWNTO); }
+"case"          { return rule(CASE); }
+"case_clause"   { return rule(CASE_CLAUSE); }
+"otherwise"     { return rule(OTHERWISE); }
 "not"           { return rule(NOT); }
 "and"           { return rule(AND); }
 "or"            { return rule(OR); }

@@ -32,33 +32,35 @@
 #define ForNode         16
 #define UptoNode        17
 #define DowntoNode      18
-#define NullNode        19
-#define LENode          20
-#define EQNode          21
-#define GENode          22
-#define NENode          23
-#define LTNode          24
-#define GTNode          25
-#define AndNode         26
-#define OrNode          27
-#define PlusNode        28
-#define MinusNode       29
-#define ModNode         30
-#define MultNode        31
-#define DivNode         32
-#define ExpNode         33
-#define SwapNode        34
-#define NotNode         35
-#define ReadNode        36
-#define TrueNode        37
-#define FalseNode       38
-#define EofNode         39
-#define IntegerNode     40
-#define IdentifierNode  41
-#define LOOP_CTXT       42
-#define FOR_CTXT        43
+#define CaseNode        19
+#define CaseClauseNode  20
+#define NullNode        21
+#define LENode          22
+#define EQNode          23
+#define GENode          24
+#define NENode          25
+#define LTNode          26
+#define GTNode          27
+#define AndNode         28
+#define OrNode          29
+#define PlusNode        30
+#define MinusNode       31
+#define ModNode         32
+#define MultNode        33
+#define DivNode         34
+#define ExpNode         35
+#define SwapNode        36
+#define NotNode         37
+#define ReadNode        38
+#define TrueNode        39
+#define FalseNode       40
+#define EofNode         41
+#define IntegerNode     42
+#define IdentifierNode  43
+#define LOOP_CTXT       44
+#define FOR_CTXT        45
 
-#define NumberOfNodes   43
+#define NumberOfNodes   45
 
 typedef TreeNode UserType;
 
@@ -70,8 +72,9 @@ typedef TreeNode UserType;
 char *node[] = { "program", "types", "type", "dclns",
                  "dcln", "integer", "boolean", "block",
                  "assign", "output", "if", "while", 
-	        "repeat", "loop", "exit",
-                 "for", "to", "downto", "<null>", "<=", "=",">=","<>", 
+	         "repeat", "loop", "exit",
+                 "for", "upto", "downto", "case", "case_clause",
+		 "<null>", "<=", "=",">=","<>", 
                  "<", ">", "and","or","+", "-", "mod","*", "/", "**",":=:",
                  "not","read", "true","false", "eof","<integer>", 
 	        "<identifier>" , "<loop_ctxt>", "<for_ctxt>"
@@ -493,6 +496,26 @@ void ProcessNode (TreeNode T)
 
 
       case AssignNode :
+         Type1 = Expression (Child(T,1));
+         Type2 = Expression (Child(T,2));
+
+         if (Type1 != Type2)
+         {
+            ErrorHeader(T);
+            printf ("ASSIGNMENT TYPES DO NOT MATCH\n");
+            printf ("\n");
+         }
+	 Temp = Lookup(FOR_CTXT,T);
+	 while (NodeName(Temp) != ProgramNode){
+	    if (NodeName(Child(Child(Temp,1),1)) == NodeName(Child(Child(T,1),1))){
+		ErrorHeader(T);
+                printf ("Can't modify variable in 'for'\n");
+                printf ("\n");
+	    }
+	    Temp = Decoration(Temp);
+	 }
+         break;
+
       case SwapNode :
          Type1 = Expression (Child(T,1));
          Type2 = Expression (Child(T,2));
@@ -500,20 +523,19 @@ void ProcessNode (TreeNode T)
          if (Type1 != Type2)
          {
             ErrorHeader(T);
-            printf ("ASSIGNMENT/SWAP TYPES DO NOT MATCH\n");
+            printf ("SWAP TYPES DO NOT MATCH\n");
             printf ("\n");
          }
 	 Temp = Lookup(FOR_CTXT,T);
 	 while (NodeName(Temp) != ProgramNode){
 	    if (NodeName(Child(Child(T,1),1)) == NodeName(Child(Child(T,1),1))){
 		ErrorHeader(T);
-                printf ("Cannot assign inside a 'for'\n");
+                printf ("Can't modify variable in 'for'\n");
                 printf ("\n");
 	    }
 	    Temp = Decoration(Temp);
 	 }
          break;
-
 
       case OutputNode :
          for (Kid = 1; Kid <= NKids(T); Kid++)
@@ -588,6 +610,7 @@ void ProcessNode (TreeNode T)
          break;
 
       case ForNode :
+
 	break;
 
       case UptoNode :
@@ -597,11 +620,12 @@ void ProcessNode (TreeNode T)
 	 OpenScope();
 	 DTEnter(FOR_CTXT,T,T);
 	 DTEnter(LOOP_CTXT);
-	 for (Kid = 1; Kid <= NKids(T); Kid++){
-            ProcessNode (Child(T,Kid));
+	 for (Kid = 1; Kid < NKids(T); Kid++){
+            Expression (Child(T,Kid));
+/*Revisar tipos*/
          }
 	 while (NodeName(Temp) != ProgramNode){
-            if (NodeName(Child(Child(T,1),1)) == NodeName(Child(Child(T,1),1))){
+            if (NodeName(Child(Child(Temp,1),1)) == NodeName(Child(Child(T,1),1))){
                ErrorHeader(T);
                printf ("cannot modify variable from inside the 'for'\n");
                printf ("\n");
