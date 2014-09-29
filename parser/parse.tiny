@@ -13,12 +13,12 @@ Statement  -> Name ASSIGNMENT Expression          	  => "assign"
            -> IF Expression THEN Statement
                             (ELSE Statement )?       	  => "if"
            -> WHILE Expression DO Statement      	  => "while"
-           -> REPEAT Body UNTIL Expression                => "repeat"
+           -> REPEAT Statement list ';' UNTIL Expression                => "repeat"
            -> LOOP Statement list ';' POOL                => "loop"
-           -> FOR Name ASSIGNMENT Expression 
-                  UPTO Expression DO Statement            => "upto"
-           -> FOR Name ASSIGNMENT Expression 
-                  DOWNTO Expression DO Statement          => "downto"
+           -> FOR Name ASSIGNMENT Expression
+                UPTO Expression DO Statement              => "to"
+           -> FOR Name ASSIGNMENT Expression
+                DOWNTO Expression DO Statement            => "downto"
 	   -> CASE Expression OF (CASE_CLAUSE 
 		            ':' Statement ';')+ 
                             (OTHERWISE Statement)? END    => "case"

@@ -34,33 +34,34 @@
 #define DowntoNode      18
 #define CaseNode        19
 #define CaseClauseNode  20
-#define NullNode        21
-#define LENode          22
-#define EQNode          23
-#define GENode          24
-#define NENode          25
-#define LTNode          26
-#define GTNode          27
-#define AndNode         28
-#define OrNode          29
-#define PlusNode        30
-#define MinusNode       31
-#define ModNode         32
-#define MultNode        33
-#define DivNode         34
-#define ExpNode         35
-#define SwapNode        36
-#define NotNode         37
-#define ReadNode        38
-#define TrueNode        39
-#define FalseNode       40
-#define EofNode         41
-#define IntegerNode     42
-#define IdentifierNode  43
-#define LOOP_CTXT       44
-#define FOR_CTXT        45
+#define OtherwiseNode   21
+#define NullNode        22
+#define LENode          23
+#define EQNode          24
+#define GENode          25
+#define NENode          26
+#define LTNode          27
+#define GTNode          28
+#define AndNode         29
+#define OrNode          30
+#define PlusNode        31
+#define MinusNode       32
+#define ModNode         33
+#define MultNode        34
+#define DivNode         35
+#define ExpNode         36
+#define SwapNode        37
+#define NotNode         38
+#define ReadNode        39
+#define TrueNode        40
+#define FalseNode       41
+#define EofNode         42
+#define IntegerNode     43
+#define IdentifierNode  44
+#define LOOP_CTXT       45
+#define FOR_CTXT        46
 
-#define NumberOfNodes   45
+#define NumberOfNodes   46
 
 typedef TreeNode UserType;
 
@@ -73,8 +74,8 @@ char *node[] = { "program", "types", "type", "dclns",
                  "dcln", "integer", "boolean", "block",
                  "assign", "output", "if", "while", 
 	         "repeat", "loop", "exit",
-                 "for", "upto", "downto", "case", "case_clause",
-		 "<null>", "<=", "=",">=","<>", 
+                 "for", "to", "downto", "case", "case_clause",
+		 "otherwise","<null>", "<=", "=",">=","<>", 
                  "<", ">", "and","or","+", "-", "mod","*", "/", "**",":=:",
                  "not","read", "true","false", "eof","<integer>", 
 	        "<identifier>" , "<loop_ctxt>", "<for_ctxt>"
@@ -392,7 +393,6 @@ UserType Expression (TreeNode T)
       case IntegerNode : 
          return (TypeInteger);
 
-
       case IdentifierNode :
          Declaration = Lookup (NodeName(Child(T,1)), T);
          if (Declaration != NullDeclaration)
@@ -610,20 +610,24 @@ void ProcessNode (TreeNode T)
          break;
 
       case ForNode :
-
 	break;
 
       case UptoNode :
       case DowntoNode :
-          Temp = Lookup(FOR_CTXT,T);
+         Temp = Lookup(FOR_CTXT,T);
 	 Decorate (T,Temp);
 	 OpenScope();
 	 DTEnter(FOR_CTXT,T,T);
 	 DTEnter(LOOP_CTXT);
-	 for (Kid = 1; Kid < NKids(T); Kid++){
-            Expression (Child(T,Kid));
-/*Revisar tipos*/
+         Type1 = Expression (Child(T,1));
+         Type2 = Expression (Child(T,2));
+         Type3 = Expression (Child(T,3));
+         if(Type1!=Type2 || Type1 != Type3){
+	    ErrorHeader(T);
+	    printf ("diferent types on for loop \n");
+            printf("\n");
          }
+         ProcessNode (Child(T,NKids(T)));
 	 while (NodeName(Temp) != ProgramNode){
             if (NodeName(Child(Child(Temp,1),1)) == NodeName(Child(Child(T,1),1))){
                ErrorHeader(T);
@@ -634,6 +638,19 @@ void ProcessNode (TreeNode T)
          }
 	 CloseScope();
          break;
+
+      case CaseNode :
+	 OpenScope();
+         Type1 = Expression (Child(T,1));
+	 for (Kid = 2; Kid <= NKids(T); Kid++)
+            ProcessNode (Child(T,Kid));
+
+	 CloseScope();
+         break;
+
+      case CaseClauseNode :
+
+	 break;
 
       case NullNode : 
          break;
