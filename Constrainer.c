@@ -33,7 +33,7 @@
 #define UptoNode        17
 #define DowntoNode      18
 #define CaseNode        19
-#define CaseClauseNode  20
+#define PointsNode      20
 #define OtherwiseNode   21
 #define NullNode        22
 #define LENode          23
@@ -74,7 +74,7 @@ char *node[] = { "program", "types", "type", "dclns",
                  "dcln", "integer", "boolean", "block",
                  "assign", "output", "if", "while", 
 	         "repeat", "loop", "exit",
-                 "for", "to", "downto", "case", "case_clause",
+                 "for", "to", "downto", "case", "..",
 		 "otherwise","<null>", "<=", "=",">=","<>", 
                  "<", ">", "and","or","+", "-", "mod","*", "/", "**",":=:",
                  "not","read", "true","false", "eof","<integer>", 
